@@ -43,5 +43,8 @@
       "pre-commit": "npm run lint",
       "pre-push": "npm run test"
     }
+  },
+  "dependencies": {
+    "lowdb": "^1.0.0"
   }
 }
