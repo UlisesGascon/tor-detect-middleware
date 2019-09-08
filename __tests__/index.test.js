@@ -8,14 +8,14 @@ const populateDB = nodes => {
 
 const mockResponse = () => {
   const res = {}
+  res.redirect = jest.fn()
   return res
 }
 
 const mockRequest = (ip) => {
   const req = {
     headers: {},
-    connection: {},
-    send: jest.fn()
+    connection: {}
   }
   req.connection.remoteAddress = ip
   return req
@@ -41,11 +41,54 @@ describe.skip('Tor Detect Middelware CRON behaviour', () => {
   test('Should refresh the store with a custom CRON Job', () => {})
 })
 
-describe.skip('Tor Detect Middelware REDIRECT behaviour', () => {
-  test('should redirect a surface user', () => {})
-  test('should not redirect a surface user', () => {})
-  test('should redirect a TOR user', () => {})
-  test('should not redirect a TOR user', () => {})
+describe('Tor Detect Middelware REDIRECT behaviour', () => {
+  test.skip('should redirect a surface user', (done) => {
+    populateDB(['IP-TOR', 'IP-TOR-2'])
+    const req = mockRequest('IP-SURFACE')
+    const res = mockResponse()
+
+    torUserHandler({
+      surface: 'https://www.nytimes.com'
+    })(req, res, () => {
+      expect(res.redirect).toHaveBeenCalled()
+      done()
+    })
+  })
+
+  test('should not redirect a surface user', (done) => {
+    populateDB(['IP-TOR', 'IP-TOR-2'])
+    const req = mockRequest('IP-SURFACE')
+    const res = mockResponse()
+
+    torUserHandler()(req, res, () => {
+      expect(res.redirect).not.toHaveBeenCalled()
+      done()
+    })
+  })
+
+  test.skip('should redirect a TOR user', (done) => {
+    populateDB(['IP-TOR', 'IP-TOR-2'])
+    const req = mockRequest('IP-TOR')
+    const res = mockResponse()
+
+    torUserHandler({
+      tor: 'https://www.nytimes3xbfgragh.onion/'
+    })(req, res, () => {
+      expect(res.redirect).toHaveBeenCalled()
+      done()
+    })
+  })
+
+  test('should not redirect a TOR user', (done) => {
+    populateDB(['IP-TOR', 'IP-TOR-2'])
+    const req = mockRequest('IP-TOR')
+    const res = mockResponse()
+
+    torUserHandler()(req, res, () => {
+      expect(res.redirect).not.toHaveBeenCalled()
+      done()
+    })
+  })
 })
 
 describe('Tor Detect Middelware DEFAULT behaviour', () => {
@@ -54,7 +97,7 @@ describe('Tor Detect Middelware DEFAULT behaviour', () => {
     const req = mockRequest('IP-TOR')
     const res = mockResponse()
 
-    torUserHandler(req, res, () => {
+    torUserHandler()(req, res, () => {
       expect(req.isTorUser).toEqual(true)
       done()
     })
@@ -65,7 +108,7 @@ describe('Tor Detect Middelware DEFAULT behaviour', () => {
     const req = mockRequest('IP-SURFACE')
     const res = mockResponse()
 
-    torUserHandler(req, res, () => {
+    torUserHandler()(req, res, () => {
       expect(req.isTorUser).toEqual(false)
       done()
     })
