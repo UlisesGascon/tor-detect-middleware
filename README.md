@@ -75,16 +75,14 @@ app.listen(3000, () => {
 
 ### Custom Cron Jobs
 
-By default we refresh the IP list every hour, but you can modify the CRON as you wish. YOu can generate new values and examples [here](https://crontab.guru)
+By default we refresh the IP list every hour, but you can modify the ms as you wish. 
 
 ```js
 const express = require('express');
 const torUserHandler = require('tor-detect-middleware')
 const app = express();
 
-app.use(torUserHandler({
-    cron: "* * * * *" // Every minute
-}))
+app.use(torUserHandler({refreshMs: 600000}))
 
 //...
 ```
