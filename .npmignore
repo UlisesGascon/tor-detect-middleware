@@ -256,5 +256,5 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/node,code,linux,macos,windows,webstorm+all
 
-**/db.json
-.vscode
+# Just for NPM
+other/
