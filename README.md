@@ -31,7 +31,7 @@ app.listen(3000, () => {
 
 ### Redirect Users
 
-In this example we redirect the surface users to `https://www.nytimes.com` and Tor users to `https://www.nytimes3xbfgragh.onion/`. You can use both wayt to redirect.
+In this example we redirect the surface users to `https://www.nytimes.com` and Tor users to `https://www.nytimes3xbfgragh.onion/`. You can use both ways to redirect.
 
 ```js
 const express = require('express');
@@ -72,10 +72,9 @@ app.listen(3000, () => {
 });
 ```
 
-
 ### Custom Cron Jobs
 
-By default we refresh the IP list every hour, but you can modify the ms as you wish. 
+By default we refresh the IP list every hour, but you can modify the ms as you wish.
 
 ```js
 const express = require('express');
@@ -87,15 +86,14 @@ app.use(torUserHandler({refreshMs: 600000}))
 //...
 ```
 
-
 ### Strict Mode
 
 Special behaviour in Strict mode:
+
 - The server will stop at startup if `https://onionoo.torproject.org/details` url is down
 - The server will wait until there is a list ready to dispatch requests. (Few seconds)
 
 _Note: if there is a list stored you wont surfer any problem, as we start the service from the previous list._
-
 
 ```js
 const express = require('express');
@@ -125,14 +123,20 @@ app.use(torUserHandler({
 //...
 ```
 
-
 ## Built With
 
-_Development only_
-* [Standard](https://www.npmjs.com/package/standard) - Linting propuses
-* [Husky](https://www.npmjs.com/package/husky) - Git Hooks
-* [Nodemon](https://www.npmjs.com/package/nodemon) - Reload the process
+Development only:
 
+- [Standard](https://www.npmjs.com/package/standard) - Linting propuses
+- [Husky](https://www.npmjs.com/package/husky) - Git Hooks
+- [Nodemon](https://www.npmjs.com/package/nodemon) - Reload the process
+
+Production only:
+
+- [debug](https://www.npmjs.com/package/debug) - Debug the app
+- [got](https://www.npmjs.com/package/got) - Download TOR infra data
+- [ip-regex](https://www.npmjs.com/package/ip-regex) - Validate relays IPs
+- [lowdb](https://www.npmjs.com/package/lowdb) - Store and query IPs
 
 ## Contributing
 
@@ -140,11 +144,11 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/ulisesGascon/tor-detect-middelware/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/ulisesGascon/tor-detect-middelware/tags).
 
 ## Authors
 
-* **Ulises Gascón** - *Initial work* - [@ulisesGascon](https://github.com/ulisesGascon)
+- **Ulises Gascón** - *Initial work- - [@ulisesGascon](https://github.com/ulisesGascon)
 
 See also the list of [contributors](https://github.com/ulisesGascon/tor-detect-middelware/contributors) who participated in this project.
 
@@ -154,4 +158,4 @@ This project is licensed under the GNU AGPL3.0 License - see the [LICENSE.md](LI
 
 ## Acknowledgments
 
-* This project is under development
+- This project is under development, but you can help us to improve it! We :heart: FOSS!
