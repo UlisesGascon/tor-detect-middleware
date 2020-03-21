@@ -1,6 +1,52 @@
-# tor-detect-middleware
+<p align="center">
+<h1 align="center">
+  tor-detect-middleware
+</h1>
 
-Tor detect middleware for Express
+<p align="center">
+  Tor detect middleware for Express
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.org/package/tor-detect-middleware"><img src="https://badgen.net/npm/v/tor-detect-middleware" alt="npm version"/></a>
+  <a href="https://www.npmjs.org/package/tor-detect-middleware"><img src="https://badgen.net/npm/license/tor-detect-middleware" alt="license"/></a>
+  <a href="https://www.npmjs.org/package/tor-detect-middleware"><img src="https://badgen.net/npm/dt/tor-detect-middleware" alt="downloads"/></a>
+  <a href="https://snyk.io/test/github/ulisesgascon/tor-detect-middleware"><img src="https://snyk.io/test/github/ulisesgascon/tor-detect-middleware/badge.svg" alt="Known Vulnerabilities"/></a>
+</p>
+
+</p>
+
+# About
+
+Tor detect middleware for Express.
+
+❤️ Awesome Features:
+
+- Easy to redirect Tor or Surface users. 🔥
+- Easy to recognize TorUsers at inside the `req` object, `req.isTorUser` 🍺
+- No infra required, the database is json based using `lowdb` 🎉
+- The `strictMode` won't allow any request to access until the relays IPs are collected 📦
+- The `purge` allow you to dump the database at startup ☣️
+- `debug` is supported 💪
+- Refresh time is customizable 🧐
+- Easy to use and great test coverage ✅
+
+```js
+const express = require('express');
+const torUserHandler = require('tor-detect-middleware')
+const app = express();
+
+app.use(torUserHandler())
+
+app.get('/', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  res.send(`Are you (${ip}) a TOR user? ${req.isTorUser}`);
+});
+
+app.listen(3000, () => {
+  console.log('We are in port 3000!');
+});
+```
 
 ## Usage
 
@@ -10,7 +56,7 @@ Tor detect middleware for Express
 npm install tor-detect-middleware
 ```
 
-### Typical example
+### simple example
 
 ```js
 const express = require('express');
