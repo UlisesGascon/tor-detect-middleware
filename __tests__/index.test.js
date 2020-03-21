@@ -1,9 +1,10 @@
 const torUserHandler = require('../lib')
 const store = require('../lib/store')
+const torRelays = require('../lib/torRelays')
+const { ipSurface, ipTor, torIpList, nytUrl, nytTorUrl, emptyDbMsg, defaultMs } = require('./fixtures')
 
-const ipSurface = '79.189.12.130'
-const ipTor = '244.242.84.73'
-const torIpList = [ipTor, '9.58.138.153', '180.206.23.192']
+// Mocking
+jest.mock('../lib/torRelays')
 
 const populateDB = nodes => {
   store.setNodes(nodes)
@@ -26,16 +27,13 @@ const mockRequest = (ip) => {
   req.connection.remoteAddress = ip
   return req
 }
-
-beforeEach((done) => {
+const cleanUp = () => {
   store.clean()
-  done()
-})
+  jest.clearAllMocks()
+}
+beforeEach(cleanUp)
 
-afterAll((done) => {
-  store.clean()
-  done()
-})
+afterAll(cleanUp)
 
 describe('Default behaviour', () => {
   test('should recognize a TOR IP origin', (done) => {
@@ -59,38 +57,98 @@ describe('Default behaviour', () => {
       done()
     })
   })
-
-  test.skip('Should not wait until there is available data in the store', () => {})
-  test.skip('Should not stop the server if the onioono service is down', () => {})
 })
 
-describe.skip('strict mode behaviour', () => {
-  test('Should stop th server if the onioono service is down in strict Mode', () => {})
-  test('Should wait until there is available data in the store in strict Mode', () => {})
+describe('strict mode behaviour', () => {
+  test('Should block TOR user if there is no available data in the store', () => {
+    const req = mockRequest(ipTor)
+    const res = mockResponse()
+    const next = mockNext()
+
+    populateDB([])
+    expect(store.getTotal()).toBe(0)
+    torUserHandler({
+      strictMode: true
+    })(req, res, next)
+    expect(next).toHaveBeenCalled()
+    expect(next).toHaveBeenCalledWith(emptyDbMsg)
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(res.redirect).not.toHaveBeenCalled()
+    expect(store.getTotal()).toBe(0)
+  })
+
+  test('Should block SURFACE user if there is no available data in the store', () => {
+    const req = mockRequest(ipSurface)
+    const res = mockResponse()
+    const next = mockNext()
+
+    populateDB([])
+    torUserHandler({
+      strictMode: true
+    })(req, res, next)
+    expect(next).toHaveBeenCalled()
+    expect(next).toHaveBeenCalledWith(emptyDbMsg)
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(res.redirect).not.toHaveBeenCalled()
+  })
+
+  test('Should not block TOR users if there is no available data in the store', () => {
+    const req = mockRequest(ipTor)
+    const res = mockResponse()
+    const next = mockNext()
+
+    populateDB([])
+    torUserHandler()(req, res, next)
+    expect(next).toHaveBeenCalled()
+    expect(res.redirect).not.toHaveBeenCalled()
+  })
 })
 
-describe.skip('Interval behaviour', () => {
-  test('Should refresh the store every hour by default', () => {})
-  test('Should refresh the store with a custom interval', () => {})
+describe('Interval behaviour', () => {
+  test('Should refresh the store every hour by default', () => {
+    torUserHandler()
+    expect(torRelays.start).toHaveBeenCalledTimes(1)
+    expect(torRelays.start).toHaveBeenCalledWith(defaultMs)
+  })
+  test('Should refresh the store with a custom interval', () => {
+    const refreshMs = 1000
+    torUserHandler({ refreshMs })
+    expect(torRelays.start).toHaveBeenCalledTimes(1)
+    expect(torRelays.start).toHaveBeenCalledWith(refreshMs)
+  })
 })
 
 describe('Redirect behaviour', () => {
-  test.skip('should redirect a surface user', (done) => {
+  test('should redirect a SURFACE user', () => {
     populateDB(torIpList)
     const req = mockRequest(ipSurface)
     const res = mockResponse()
     const next = mockNext()
 
     torUserHandler({
-      surface: 'https://www.nytimes.com'
-    })(req, res, () => {
-      expect(res.redirect).toHaveBeenCalled(1)
-      expect(next).not.toHaveBeenCalled()
-      done()
-    })
+      surface: nytUrl
+    })(req, res)
+    expect(res.redirect).toHaveBeenCalledTimes(1)
+    expect(res.redirect).toHaveBeenCalledWith(nytUrl)
+    expect(next).not.toHaveBeenCalled()
   })
 
-  test('should not redirect a surface user', (done) => {
+  test('should redirect a TOR user', () => {
+    populateDB(torIpList)
+    const req = mockRequest(ipTor)
+    const res = mockResponse()
+    const next = mockNext()
+
+    torUserHandler({
+      tor: nytTorUrl
+    })(req, res, next)
+
+    expect(next).not.toHaveBeenCalled()
+    expect(res.redirect).toHaveBeenCalledTimes(1)
+    expect(res.redirect).toHaveBeenCalledWith(nytTorUrl)
+  })
+
+  test('should not redirect ANY user', () => {
     populateDB(torIpList)
     const req = mockRequest(ipSurface)
     const res = mockResponse()
@@ -99,45 +157,14 @@ describe('Redirect behaviour', () => {
     torUserHandler()(req, res, next)
     expect(next).toHaveBeenCalled()
     expect(res.redirect).not.toHaveBeenCalled()
-    done()
-  })
-
-  test('should redirect a TOR user', (done) => {
-    populateDB(torIpList)
-    const req = mockRequest(ipTor)
-    const res = mockResponse()
-    const next = mockNext()
-
-    torUserHandler({
-      tor: 'https://www.nytimes3xbfgragh.onion/'
-    })(req, res, next)
-
-    // https://stackoverflow.com/a/48889610
-    expect(next).not.toHaveBeenCalled()
-    expect(res.redirect).toHaveBeenCalled()
-    expect(res.redirect).toHaveBeenCalledTimes(1)
-    expect(res.redirect).toHaveBeenCalledWith('https://www.nytimes3xbfgragh.onion/')
-    done()
-
-    /* (req, res, () => {
-      expect(res.redirect).toHaveBeenCalled()
-      done()
-    }) */
-  })
-
-  test('should not redirect a TOR user', (done) => {
-    populateDB(torIpList)
-    const req = mockRequest(ipTor)
-    const res = mockResponse()
-
-    torUserHandler()(req, res, () => {
-      expect(res.redirect).not.toHaveBeenCalled()
-      done()
-    })
   })
 })
 
-describe.skip('Purge behaviour', () => {
-  test('Should purge the IP list', () => {})
-  test('Should purge the IP list only at the startup', () => {})
+describe('Purge behaviour', () => {
+  test('Should purge the IP list only at the startup', () => {
+    populateDB(torIpList)
+    expect(store.getTotal()).toBe(3)
+    torUserHandler({ purge: true })
+    expect(store.getTotal()).toBe(0)
+  })
 })
