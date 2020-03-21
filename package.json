@@ -24,7 +24,7 @@
     "url": "git+https://github.com/UlisesGascon/tor-detect-middleware.git"
   },
   "keywords": [
-    "tor"
+    "tor", "blacklist", "whitelist", "express", "middleware"
   ],
   "author": "Ulises Gascon",
   "license": "AGPL-3.0",
