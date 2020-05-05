@@ -9,7 +9,9 @@
     "test:watch": "jest --verbose ./**/*.test.js --watchAll",
     "lint": "standard",
     "lint:fix": "standard --fix",
-    "dev": "nodemon ./lib/index.js"
+    "dev": "nodemon ./lib/index.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "standard": {
     "env": [
@@ -24,7 +26,11 @@
     "url": "git+https://github.com/UlisesGascon/tor-detect-middleware.git"
   },
   "keywords": [
-    "tor", "blacklist", "whitelist", "express", "middleware"
+    "tor",
+    "blacklist",
+    "whitelist",
+    "express",
+    "middleware"
   ],
   "author": "Ulises Gascon",
   "license": "AGPL-3.0",
@@ -48,6 +54,8 @@
     "debug": "^4.1.1",
     "got": "^10.6.0",
     "ip-regex": "^4.1.0",
-    "lowdb": "^1.0.0"
-  }
+    "lowdb": "^1.0.0",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
