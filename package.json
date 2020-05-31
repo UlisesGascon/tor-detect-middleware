@@ -1,6 +1,6 @@
 {
   "name": "tor-detect-middleware",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Tor detect middleware for Express",
   "main": "./lib/index.js",
   "scripts": {
