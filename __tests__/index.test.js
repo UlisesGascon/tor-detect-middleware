@@ -1,7 +1,7 @@
 const torUserHandler = require('../lib')
 const store = require('../lib/store')
 const torRelays = require('../lib/torRelays')
-const { ipSurface, ipTor, torIpList, nytUrl, nytTorUrl, emptyDbMsg, defaultMs } = require('./fixtures')
+const { ipSurface, ipTor, exitTorList, nytUrl, nytTorUrl, emptyDbMsg, defaultMs } = require('./fixtures')
 
 // Mocking
 jest.mock('../lib/torRelays')
@@ -37,7 +37,7 @@ afterAll(cleanUp)
 
 describe('Default behaviour', () => {
   test('should recognize a TOR IP origin', (done) => {
-    populateDB(torIpList)
+    populateDB(exitTorList)
     const req = mockRequest(ipTor)
     const res = mockResponse()
 
@@ -48,7 +48,7 @@ describe('Default behaviour', () => {
   })
 
   test('Should recognize a surface IP origin', (done) => {
-    populateDB(torIpList)
+    populateDB(exitTorList)
     const req = mockRequest(ipSurface)
     const res = mockResponse()
 
@@ -120,7 +120,7 @@ describe('Interval behaviour', () => {
 
 describe('Redirect behaviour', () => {
   test('should redirect a SURFACE user', () => {
-    populateDB(torIpList)
+    populateDB(exitTorList)
     const req = mockRequest(ipSurface)
     const res = mockResponse()
     const next = mockNext()
@@ -134,7 +134,7 @@ describe('Redirect behaviour', () => {
   })
 
   test('should redirect a TOR user', () => {
-    populateDB(torIpList)
+    populateDB(exitTorList)
     const req = mockRequest(ipTor)
     const res = mockResponse()
     const next = mockNext()
@@ -149,7 +149,7 @@ describe('Redirect behaviour', () => {
   })
 
   test('should not redirect ANY user', () => {
-    populateDB(torIpList)
+    populateDB(exitTorList)
     const req = mockRequest(ipSurface)
     const res = mockResponse()
     const next = mockNext()
@@ -162,8 +162,8 @@ describe('Redirect behaviour', () => {
 
 describe('Purge behaviour', () => {
   test('Should purge the IP list only at the startup', () => {
-    populateDB(torIpList)
-    expect(store.getTotal()).toBe(3)
+    populateDB(exitTorList)
+    expect(store.getTotal()).toBe(2)
     torUserHandler({ purge: true })
     expect(store.getTotal()).toBe(0)
   })

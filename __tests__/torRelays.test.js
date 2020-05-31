@@ -1,4 +1,4 @@
-const { torIpList } = require('./fixtures')
+const { exitTorList } = require('./fixtures')
 const { update } = require('../lib/torRelays')
 const store = require('../lib/store')
 
@@ -11,11 +11,11 @@ beforeEach(cleanUp)
 
 afterAll(cleanUp)
 
-describe.only('torRelays behaviour', () => {
-  test.only('Update should refresh database', async (done) => {
+describe('torRelays behaviour', () => {
+  test('Update should refresh database', async (done) => {
     expect(store.getTotal()).toBe(0)
     await update()
-    expect(store.getNodes()).toEqual(torIpList)
+    expect(store.getNodes()).toEqual(exitTorList)
     done()
   })
 })

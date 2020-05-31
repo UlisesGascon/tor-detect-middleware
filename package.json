@@ -1,6 +1,6 @@
 {
   "name": "tor-detect-middleware",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Tor detect middleware for Express",
   "main": "./lib/index.js",
   "scripts": {
@@ -39,10 +39,10 @@
   },
   "homepage": "https://github.com/UlisesGascon/tor-detect-middleware#readme",
   "devDependencies": {
-    "husky": "^4.2.3",
-    "jest": "^25.1.0",
-    "nodemon": "^2.0.2",
-    "standard": "^14.3.3"
+    "husky": "^4.2.5",
+    "jest": "^26.0.1",
+    "nodemon": "^2.0.4",
+    "standard": "^14.3.4"
   },
   "husky": {
     "hooks": {
@@ -52,10 +52,10 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "got": "^10.6.0",
+    "got": "^11.1.4",
     "ip-regex": "^4.1.0",
     "lowdb": "^1.0.0",
-    "snyk": "^1.316.1"
+    "snyk": "^1.332.1"
   },
   "snyk": true
 }
