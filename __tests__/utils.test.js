@@ -1,18 +1,20 @@
 
-const { simplifiedResponse, ipTor, torIpList } = require('./fixtures')
+const { exitTorList, simplifiedResponse, ipTor } = require('./fixtures')
 const { extractIpsfromNode } = require('../lib/utils')
 
-describe.only('extractIpsfromNode behaviour', () => {
-  test.only('Should ignore not valid IPs', () => {
+describe('extractIpsfromNode behaviour', () => {
+  test('Should ignore not valid IPs', () => {
     const relays = [{
-      or_addresses: [`${ipTor}:4000`, 'fake-IP']
+      or_addresses: [`${ipTor}:4000`, 'fake-IP'],
+      flags: ['Exit']
     },
-    { or_addresses: ['no-valid'] }]
+    { or_addresses: ['no-valid'], flags: ['Exit'] }]
     const validIps = [ipTor]
+
     expect(extractIpsfromNode(relays)).toEqual(validIps)
   })
 
-  test.only('Should handle several relays', () => {
-    expect(extractIpsfromNode(simplifiedResponse.relays)).toEqual(torIpList)
+  test('Should return only exit nodes', () => {
+    expect(extractIpsfromNode(simplifiedResponse.relays)).toEqual(exitTorList)
   })
 })
